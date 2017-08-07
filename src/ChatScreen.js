@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
-import { View, StyleSheet, Button, Text, TextInput } from 'react-native'
+import { View, KeyboardAvoidingView, ScrollView, StyleSheet, Button, Text, TextInput } from 'react-native'
 
 import { Socket } from './lib/phoenix'
+
+import Message from './Message'
 
 class ChatScreen extends Component {
   static navigationOptions = ({ navigation }) => (
@@ -26,7 +28,7 @@ class ChatScreen extends Component {
   }
   
   componentWillMount() {
-    this.socketInstance = new Socket('ws://172.16.50.36:5000/socket', { params: { user: this.props.navigation.state.params.username } })
+    this.socketInstance = new Socket('', { params: { user: this.props.navigation.state.params.username } })
     this.socketInstance.connect()
     
     this.roomInstance = this.socketInstance.channel('room:lobby', {})
@@ -46,25 +48,34 @@ class ChatScreen extends Component {
   }
   
   onSubmitHandler() {
-    this.roomInstance.push("message:new", this.state.messageToSubmit)
-    
-    this.setState({ messageToSubmit: '' })
+    if (this.state.messageToSubmit) {
+      this.roomInstance.push("message:new", this.state.messageToSubmit)
+      
+      this.setState({ messageToSubmit: '' })
+    }
   }
   
   getMessageLines() {
     return this.state.messages.map((message, index) => {
       return (
-        <Text key={index}>{message.body}</Text>
+        <Message
+          username={this.props.navigation.state.params.username}
+          messageUsername={message.user}
+          messageContent={message.body}
+          key={index}
+        />
       )
     })
   }
   
   render() {
     return (
-      <View style={styles.container}>
-        <View style={styles.containerMessages}>
-          {this.getMessageLines()}
-        </View>
+      <KeyboardAvoidingView style={styles.container} behavior='padding'>
+        <ScrollView style={styles.containerMessages}>
+          <View>
+            {this.getMessageLines()}
+          </View>
+        </ScrollView>
         <View style={styles.footer}>
           <View style={styles.footerContent}>
             <View style={styles.input}>
@@ -84,7 +95,7 @@ class ChatScreen extends Component {
             </View>
           </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     )
   }
 }
@@ -96,6 +107,7 @@ const styles = StyleSheet.create({
   },
   containerMessages: {
     flex: 1,
+    marginBottom: 5
   },
   footer: {
     height: 50,
@@ -107,7 +119,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-around'
+    padding: 10
   },
   input: {
     flex: 1

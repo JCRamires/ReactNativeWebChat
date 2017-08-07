@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-import { View, StyleSheet, Image, TextInput } from 'react-native'
+import { View, KeyboardAvoidingView, StyleSheet, Image, TextInput } from 'react-native'
 import PinguSplashImage from './img/pingusplash-small.png'
 
 import { NavigationActions } from 'react-navigation'
@@ -33,18 +33,19 @@ class PinguSplash extends PureComponent {
   
   render() {
     return (
-      <View style={styles.container}>
+      <KeyboardAvoidingView style={styles.container} behavior='padding'>
         <Image source={PinguSplashImage} style={styles.image} resizeMode='contain' />
-        <View>
+        <View style={{ marginTop: 10, borderWidth: 1, borderColor: 'black' }}>
           <TextInput
             placeholder='Choose your username'
             value={this.state.username}
             onChangeText={this._onChangeUsernameHandler}
             onSubmitEditing={this._onSubmitHandler}
-            style={{ width: 150 }}
+            style={{ width: 200 }}
+            underlineColorAndroid='transparent'
           />
         </View>
-      </View>
+      </KeyboardAvoidingView>
     )
   }
 }
@@ -52,7 +53,7 @@ class PinguSplash extends PureComponent {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'blue',
+    backgroundColor: '#f4fbff',
     alignItems: 'center',
     justifyContent: 'center'
   },
